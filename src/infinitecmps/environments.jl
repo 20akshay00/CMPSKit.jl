@@ -121,7 +121,8 @@ function leftenv(H::LocalHamiltonian, Ψρs::InfiniteCMPSData, HL₀=nothing;
         HL₀ = HL₀ - ρL * dot(HL₀, ρR)
     end
     let TL = LeftTransfer(Ψ)
-        HL, infoL = linsolve(hL / norm(hL), HL₀, linalg) do x
+        b = (norm(hL) ≈ 0.0) ? zero(hL) : hL / norm(hL)
+        HL, infoL = linsolve(b, HL₀, linalg) do x
             y = ∂(x) - TL(x; kwargs...)
             y = axpy!(dot(ρR, x), ρL, y)
             return truncate!(y; tol=linalg.tol / 100, kwargs...)
