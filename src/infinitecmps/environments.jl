@@ -154,7 +154,8 @@ function rightenv(H::LocalHamiltonian, Ψρs::InfiniteCMPSData, HR₀=nothing;
         HR₀ = HR₀ - ρR * dot(ρL, HR₀)
     end
     let TR = RightTransfer(Ψ)
-        HR, infoR = linsolve(hR / norm(hR), HR₀, linalg) do x
+        b = (norm(hR) ≈ 0.0) ? zero(hR) : hR / norm(hR)
+        HR, infoR = linsolve(b, HR₀, linalg) do x
             y = -∂(x) - TR(x; kwargs...)
             y = axpy!(dot(ρL, x), ρR, y)
             return truncate!(y; tol=linalg.tol / 100, kwargs...)
