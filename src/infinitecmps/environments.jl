@@ -121,7 +121,9 @@ function leftenv(H::LocalHamiltonian, Ψρs::InfiniteCMPSData, HL₀=nothing;
         HL₀ = HL₀ - ρL * dot(HL₀, ρR)
     end
     let TL = LeftTransfer(Ψ)
-        b = (norm(hL) < one(norm(hL))) ? hL : hL / norm(hL)
+        hLnorm = norm(hL)
+        # rescale to avoid issues with truncate! and linsolve convergence
+        b = (hLnorm < one(hLnorm)) ? hL : hL / hLnorm
         HL, infoL = linsolve(b, HL₀, linalg) do x
             y = ∂(x) - TL(x; kwargs...)
             y = axpy!(dot(ρR, x), ρL, y)
@@ -154,7 +156,9 @@ function rightenv(H::LocalHamiltonian, Ψρs::InfiniteCMPSData, HR₀=nothing;
         HR₀ = HR₀ - ρR * dot(ρL, HR₀)
     end
     let TR = RightTransfer(Ψ)
-        b = (norm(hR) < one(norm(hR))) ? hR : hR / norm(hR)
+        hRnorm = norm(hR)
+        # rescale to avoid issues with truncate! and linsolve convergence
+        b = (hRnorm < one(hRnorm)) ? hR : hR / hRnorm
         HR, infoR = linsolve(b, HR₀, linalg) do x
             y = -∂(x) - TR(x; kwargs...)
             y = axpy!(dot(ρL, x), ρR, y)
