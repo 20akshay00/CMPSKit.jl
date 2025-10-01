@@ -129,7 +129,7 @@ function leftenv(H::LocalHamiltonian, Ψρs::InfiniteCMPSData, HL₀=nothing;
             y = axpy!(dot(ρR, x), ρL, y)
             return truncate!(y; tol=linalg.tol / 100, kwargs...)
         end
-        HL = rmul!(HL + HL', 0.5 * norm(hL))
+        HL = rmul!(HL + HL', (hLnorm < one(hLnorm)) ? 0.5 : 0.5 * norm(hL))
         # truncate!(HL; tol = linalg.tol/100, kwargs...)
         res = hL - (∂(HL) - TL(HL))
         infoL = ConvergenceInfo(infoL.converged, res, norm(res), infoL.numiter,
@@ -164,7 +164,7 @@ function rightenv(H::LocalHamiltonian, Ψρs::InfiniteCMPSData, HR₀=nothing;
             y = axpy!(dot(ρL, x), ρR, y)
             return truncate!(y; tol=linalg.tol / 100, kwargs...)
         end
-        HR = rmul!(HR + HR', 0.5 * norm(hR))
+        HR = rmul!(HR + HR', (hRnorm < one(hRnorm)) ? 0.5 : 0.5 * norm(hR))
         # res = hR - (-∂(HR)-TR(HR))
         # truncate!(HR; tol = linalg.tol/100, kwargs...)
         res = hR - (-∂(HR) - TR(HR))
