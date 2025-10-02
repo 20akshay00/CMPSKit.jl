@@ -82,7 +82,6 @@ include("yanggaudin/environments.jl")
 include("yanggaudin/gauging.jl")
 include("yanggaudin/gradients.jl")
 include("yanggaudin/groundstate.jl")
-#include("yanggaudin/excitations.jl")
 
 # Deprecations
 Base.@deprecate_binding ψ ψ̂
